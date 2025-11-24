@@ -1,4 +1,4 @@
-import { AssetStatus, AssetType, BrandData, Folder } from './types';
+import { AssetStatus, AssetType, BrandData, Folder, VideoProject, AppSettings } from './types';
 
 export const TECHFLOW_DATA: BrandData = {
   name: "TechFlow Solutions",
@@ -120,7 +120,81 @@ export const TECHFLOW_DATA: BrandData = {
     { id: 'c5', date: '2024-06-15', assetId: 'a1', channel: 'Email' },
     { id: 'c6', date: '2024-06-20', assetId: 'a4', channel: 'Website' },
     { id: 'c7', date: '2024-06-25', assetId: 'a5', channel: 'LinkedIn' }
+  ],
+  videoProjects: [
+    {
+      id: 'vp1',
+      title: 'Product Demo - DevOps Platform',
+      brandId: 'b1',
+      pillarId: 'pil2',
+      status: AssetStatus.DRAFT,
+      resolution: '1080p',
+      aspectRatio: '16:9',
+      totalDuration: 150, // 2:30 min
+      lastModified: '2024-06-16',
+      scenes: [
+        { 
+          id: 'sc1', order: 1, name: 'Intro: CI/CD Chaos', duration: 15, status: 'ready', transition: 'Fade',
+          description: 'Split screen showing frustrated developers dealing with merge conflicts vs happy TechFlow users.',
+          visualPrompt: 'Cinematic split screen, left side dark and chaotic server room with red lights, right side clean bright modern office with blue hologram data flow.',
+          voiceScript: 'Is your engineering team drowning in merge conflicts and deployment failures? You are not alone.'
+        },
+        { 
+          id: 'sc2', order: 2, name: 'The TechFlow Solution', duration: 30, status: 'generating', transition: 'Zoom',
+          description: 'Animated visualization of the TechFlow engine resolving git conflicts automatically.',
+          visualPrompt: '3D animation of code blocks merging seamlessly, glowing blue nodes connecting in a network, high tech UI overlay.',
+          voiceScript: 'Meet TechFlow. The world\'s first AI-driven central nervous system for hybrid DevOps environments.'
+        },
+        { 
+          id: 'sc3', order: 3, name: 'Security Compliance', duration: 45, status: 'empty', transition: 'Slide',
+          description: 'Shield interface showing SOC2 and ISO compliance checks passing.',
+          visualPrompt: 'Digital shield forming around a server rack, green checkmarks appearing for SOC2 and ISO 27001, futuristic HUD.',
+          voiceScript: 'With automated SOC2 compliance checks built-in, you can deploy with confidence, not compromise.'
+        },
+        { 
+          id: 'sc4', order: 4, name: 'Hybrid Cloud', duration: 30, status: 'empty', transition: 'Fade',
+          description: 'Data flowing between on-prem servers and AWS/Azure clouds.',
+          visualPrompt: 'Data streams flowing rapidly between a physical server rack and a stylized cloud icon, representing seamless hybrid integration.',
+          voiceScript: 'Whether you are on-prem, in the cloud, or somewhere in between, TechFlow bridges the gap.'
+        },
+        { 
+          id: 'sc5', order: 5, name: 'Call to Action', duration: 30, status: 'empty', transition: 'None',
+          description: 'Logo reveal and website URL.',
+          visualPrompt: 'Clean white background, TechFlow logo animates in center, "Schedule Demo" button appears in TechFlow blue.',
+          voiceScript: 'Stop fixing pipelines. Start shipping code. Schedule your demo at techflow.io today.'
+        }
+      ]
+    }
   ]
+};
+
+export const DEFAULT_SETTINGS: AppSettings = {
+  profile: {
+    name: 'Admin User',
+    email: 'admin@techflow.io',
+    role: 'Marketing Director',
+    company: 'TechFlow Solutions',
+    avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=4F46E5&color=fff'
+  },
+  api: {
+    geminiKey: 'sk-xxxxxxxxxxxxxxxxxxxxxxxx',
+    veoKey: 'sk-xxxxxxxxxxxxxxxxxxxxxxxx',
+    googleDriveToken: 'ya29.xxxxxxxxxxxxxxxxxxxxxxxx'
+  },
+  appearance: {
+    theme: 'light',
+    primaryColor: '#4F46E5',
+    compactMode: false
+  },
+  notifications: {
+    email: true,
+    push: false,
+    approvalAlerts: true
+  },
+  privacy: {
+    analyticsTracking: true,
+    dataRetentionDays: 365
+  }
 };
 
 export const FOLDER_STRUCTURE: Folder[] = [
@@ -156,6 +230,7 @@ export const FOLDER_STRUCTURE: Folder[] = [
       { id: 'f5-5', name: 'Dev-Culture', path: '05-Assets/Dev-Culture', children: [] },
       { id: 'f5-6', name: 'Industry-Trends', path: '05-Assets/Industry-Trends', children: [] },
       { id: 'f5-7', name: 'Future-of-Work', path: '05-Assets/Future-of-Work', children: [] },
+      { id: 'f5-8', name: 'Videos', path: '05-Assets/Videos', children: [] }, // Synced Video Folder
     ]
   },
   {
