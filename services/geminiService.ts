@@ -1,98 +1,110 @@
-import { GoogleGenAI, Modality } from "@google/genai";
+const BACKEND_URL = 'http://localhost:3001/api';
 
-const apiKey = process.env.API_KEY || '';
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
-
+/**
+ * Calls the backend to generate strategic insights using Gemini 2.5 Flash.
+ */
 export const generateStrategicInsight = async (topic: string, context: string): Promise<string> => {
-  if (!ai) return "AI Service Unavailable: Missing API Key. Please provide an API Key to enable generation.";
-  
   try {
-    const model = 'gemini-2.5-flash';
-    const prompt = `
-      Act as a Senior Brand Strategist for 'TechFlow Solutions', a B2B SaaS company specializing in DevOps automation.
-      Context: ${context}
-      
-      Task: Provide a strategic insight or content idea regarding: ${topic}.
-      Keep it brief, professional, and actionable (under 100 words).
-    `;
-
-    const response = await ai.models.generateContent({
-      model: model,
-      contents: prompt,
+    const response = await fetch(`${BACKEND_URL}/gemini/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: `Act as a Senior Brand Strategist for 'TechFlow Solutions'. 
+                 Context: ${context}
+                 Task: Provide a strategic insight or content idea regarding: ${topic}. 
+                 Keep it brief, professional, and actionable (under 100 words).`,
+        systemInstruction: "You are an expert brand strategist for B2B SaaS."
+      })
     });
 
-    return response.text || "No insight generated.";
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to generate insight');
+    }
+
+    const data = await response.json();
+    return data.text || "No insight generated.";
   } catch (error) {
-    console.error("Gemini API Error:", error);
-    return "Error generating insight. Please check your API key and connection.";
+    console.error("Strategy Gen Error:", error);
+    return "Error generating insight. Ensure Backend is running on port 3001.";
   }
 };
 
+/**
+ * Calls the backend to refine content text.
+ */
 export const refineAssetContent = async (currentContent: string, tone: string): Promise<string> => {
-    if (!ai) return "AI Service Unavailable.";
-
     try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: `Rewrite the following content to match a ${tone} tone for a B2B audience:\n\n${currentContent}`
+        const response = await fetch(`${BACKEND_URL}/gemini/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                prompt: `Rewrite the following content to match a ${tone} tone for a B2B audience:\n\n${currentContent}`
+            })
         });
-        return response.text || currentContent;
-    } catch (error) {
-        return "Error refining content.";
-    }
-}
 
+        if (!response.ok) throw new Error('Backend error');
+        const data = await response.json();
+        return data.text || currentContent;
+    } catch (error) {
+        console.error("Refine Content Error:", error);
+        return currentContent; // Fallback to original
+    }
+};
+
+/**
+ * Calls the backend to generate a video using Veo 3.1.
+ * Handles the polling logic server-side.
+ */
 export const generateVideoSegment = async (prompt: string, aspectRatio: '16:9' | '9:16'): Promise<string | null> => {
-  if (!ai) return null;
-  
-  // Note: Real Veo generation requires user-selected API key via window.aistudio
   try {
-    // Simulating the Veo request structure
-    /* 
-    let operation = await ai.models.generateVideos({
-      model: 'veo-3.1-fast-generate-preview',
-      prompt: prompt,
-      config: {
-        numberOfVideos: 1,
-        resolution: '1080p',
-        aspectRatio: aspectRatio
-      }
+    const response = await fetch(`${BACKEND_URL}/videos/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            prompt,
+            aspectRatio
+        })
     });
-    // Polling logic would go here
-    */
-    
-    // For this demo environment, we simulate a delay and return a placeholder
-    // In production, uncomment above and implement polling loop
-    await new Promise(resolve => setTimeout(resolve, 3000)); 
-    return "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"; // Placeholder video
+
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Video generation failed');
+    }
+
+    const data = await response.json();
+    return data.videoUrl;
   } catch (error) {
     console.error("Veo API Error:", error);
+    alert("Backend Error: Ensure server is running and API_KEY is valid.");
     return null;
   }
 };
 
+/**
+ * Calls the backend to generate audio using Gemini TTS.
+ */
 export const generateVoiceover = async (text: string): Promise<string | null> => {
-  if (!ai) return null;
-
   try {
-    // Simulating TTS request
-    /*
-    const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash-preview-tts",
-        contents: [{ parts: [{ text: text }] }],
-        config: {
-            responseModalities: [Modality.AUDIO],
-            speechConfig: {
-                voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } },
-            },
-        },
+    const response = await fetch(`${BACKEND_URL}/audio/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            text,
+            voiceName: 'Kore' // Default voice
+        })
     });
-    // Decode base64 logic would go here
-    */
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    return "mock_audio_blob_url"; 
+
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'TTS generation failed');
+    }
+
+    const data = await response.json();
+    return data.audioUrl;
   } catch (error) {
      console.error("TTS API Error:", error);
+     alert("Backend Error: Ensure server is running and API_KEY is valid.");
      return null;
   }
 }
