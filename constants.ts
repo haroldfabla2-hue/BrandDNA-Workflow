@@ -177,9 +177,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
     avatar: 'https://ui-avatars.com/api/?name=Admin+User&background=4F46E5&color=fff'
   },
   api: {
-    geminiKey: 'sk-xxxxxxxxxxxxxxxxxxxxxxxx',
-    veoKey: 'sk-xxxxxxxxxxxxxxxxxxxxxxxx',
-    googleDriveToken: 'ya29.xxxxxxxxxxxxxxxxxxxxxxxx'
+    geminiKey: process.env.GEMINI_API_KEY || '',
+    veoKey: process.env.VEO_API_KEY || '',
+    googleDriveToken: process.env.GOOGLE_DRIVE_TOKEN || ''
   },
   appearance: {
     theme: 'light',
